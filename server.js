@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://music-recs-fe.vercel.app/'],
+    origin: ['http://localhost:5173', 'https://music-recs-fe.vercel.app'],
     credentials: true
 }));
 app.use((req, res, next) => {
