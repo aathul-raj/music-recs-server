@@ -23,6 +23,10 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+app.get('/', (req, res) => {
+    res.send('Working!');
+});
+
 // Endpoint for music recommendations
 app.post('/recommend', async (req, res) => {
     const { type, items } = req.body; // type can be 'artists' or 'albums'
@@ -60,7 +64,7 @@ function parseResponse(responseText) {
     return responseText.split('\n').filter(item => item.trim() !== '').slice(0, 3);
 }
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
