@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-
+import 'dotenv/config';
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 // Updated initialization
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Endpoint for music recommendations
