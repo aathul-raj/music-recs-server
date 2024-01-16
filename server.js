@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 // Updated initialization
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY // This is also the default, can be omitted
 });
 
 app.get('/', (req, res) => {
@@ -34,15 +34,17 @@ app.post('/recommend', async (req, res) => {
         const prompt = constructPrompt(type, items);
 
         // Updated completion creation
-        const completion = await openai.completions.create({
-            model: 'text-davinci-003',
-            prompt: prompt,
+        const completion = await openai.chat.completions.create({ 
+            model: "gpt-3.5-turbo",
+            messages: [{role: "user", content: prompt}],
             max_tokens: 100,
             temperature: 0.7
         });
 
         // Updated response parsing
-        const recommendations = parseResponse(completion.choices[0].text);
+        console.log(completion);
+
+        const recommendations = parseResponse(completion.choices[0].message.content);
         res.json(recommendations);
     } catch (error) {
         // Updated error handling
@@ -56,7 +58,7 @@ app.post('/recommend', async (req, res) => {
 
 function constructPrompt(type, items) {
     let joinedItems = items.join(', ');
-    return `Based on the musical characteristics, themes, and styles of ${joinedItems}, recommend three ${type} that a fan of these might enjoy. Provide recommendations that are both fitting and but also exploratory to introduce the listener to new but related experiences - while occasional mainstream ${type} are fine, try to introduce them to new stuff as well. Please ONLY OUTPUT ${type.toUpperCase()}, NO ANALYSIS. The response should be in the EXACT format: "${type} 1, ${type} 2, ${type} 3". DO NOT REPEAT THE ${type.toUpperCase()} GIVEN TO YOU. Please only return three ${type}, period. Make sure they are real as well. This is the most important thing. Double check and MAKE SURE YOUR ${type.toUpperCase()} ARE REAL. FOLLOW THIS FORMATTING EXACTLY: OMIT ALL PERIODS AND COMMAS IN YOUR RESPONSE. Because of the way I'm formatting your response that will mess me up. Again, do not include a single period or comma in your response ESPECIALLY in the names of the albums/artists. Just omit it.`;
+    return `Based on the musical characteristics, themes, and styles of ${joinedItems}, recommend three ${type} that a fan of these might enjoy. The response must strictly adhere to the following format: "${type} 1, ${type} 2, ${type} 3" with no deviations. This means no additional analysis, comments, or information should be included - only the names of the three ${type}, exactly as requested. It is crucial that you do not repeat any of the ${type.toUpperCase()} mentioned earlier and that all recommendations are real and verifiable. Also, ensure that there are no periods, commas, or any other punctuation in the names of the albums or artists. Just provide the names in the exact format specified.`;
 }
 
 
